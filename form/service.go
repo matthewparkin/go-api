@@ -2,21 +2,25 @@ package form
 
 import "fmt"
 
+// FormElement describes a single form input field. Similar to a interface in js/ts. No type inheritance.
 type FormElement struct {
-	Type     string   `json:"type"`              // I.e., "text", "number", "select", etc.
-	Label    string   `json:"label"`             // i.e., "First Name", "Age", etc.
-	Name     string   `json:"name"`              // i.e., "first_name", "age", etc.
-	Options  []string `json:"options,omitempty"` // Used for select, radio, etc.
-	Required bool     `json:"required"`          // Whether the field is required
+	Type     string   `json:"type"`              // Input type: text, email, number, select, etc.
+	Label    string   `json:"label"`             // Display name
+	Name     string   `json:"name"`              // Form field name
+	Options  []string `json:"options,omitempty"` // Choices for select/radio fields
+	Required bool     `json:"required"`          // Is field required?
 }
 
+// Service retrieves form definitions. Interface allows easy testing.
 type Service interface {
 	GetForm(formID string) ([]FormElement, error)
 }
 
 type formService struct{}
 
+// GetForm returns form elements or error if not found.
 func (formService) GetForm(formID string) ([]FormElement, error) {
+	// Hardcoded forms. In production, load from database
 	forms := map[string][]FormElement{
 		"registration": {
 			{Type: "text", Label: "First Name", Name: "first_name", Required: true},
@@ -28,6 +32,11 @@ func (formService) GetForm(formID string) ([]FormElement, error) {
 			{Type: "text", Label: "Name", Name: "name", Required: false},
 			{Type: "email", Label: "Email", Name: "email", Required: false},
 		},
+		"survey": {
+			{Type: "text", Label: "Age", Name: "age", Required: true},
+			{Type: "select", Label: "Satisfaction Level", Name: "satisfaction_level", Options: []string{"Very Satisfied", "Satisfied", "Neutral", "Dissatisfied", "Very Dissatisfied"}, Required: true},
+			{Type: "text", Label: "Comments", Name: "comments", Required: false},
+		},
 	}
 
 	elements, exists := forms[formID]
@@ -37,6 +46,7 @@ func (formService) GetForm(formID string) ([]FormElement, error) {
 	return elements, nil
 }
 
+// NewService factory creates a Service instance.
 func NewService() Service {
 	return formService{}
 }
