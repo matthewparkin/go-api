@@ -1,4 +1,4 @@
-package main
+package form
 
 import (
 	"context"
@@ -10,16 +10,16 @@ import (
 
 func decodeRequest(_ context.Context, r *http.Request) (interface{}, error) {
 	formID := r.URL.Query().Get("id")
-	return getRequest{FormID: formID}, nil
+	return GetRequest{FormID: formID}, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
 	return json.NewEncoder(w).Encode(response)
 }
 
-func NewHttpHandler(service Service) http.Handler {
+func NewHTTPHandler(service Service) http.Handler {
 	formHandler := gohttp.NewServer(
-		makeEndpoint(service),
+		MakeEndpoint(service),
 		decodeRequest,
 		encodeResponse,
 	)

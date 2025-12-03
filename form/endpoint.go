@@ -1,4 +1,4 @@
-package main
+package form
 
 import (
 	"context"
@@ -6,22 +6,22 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-func makeEndpoint(service Service) endpoint.Endpoint {
+func MakeEndpoint(service Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		req := request.(getRequest)
+		req := request.(GetRequest)
 		elements, err := service.GetForm(req.FormID)
 		if err != nil {
-			return getResponse{Elements: nil, Err: err.Error()}, nil
+			return GetResponse{Elements: nil, Err: err.Error()}, nil
 		}
-		return getResponse{Elements: elements, Err: ""}, nil
+		return GetResponse{Elements: elements, Err: ""}, nil
 	}
 }
 
-type getRequest struct {
+type GetRequest struct {
 	FormID string `json:"form_id"`
 }
 
-type getResponse struct {
+type GetResponse struct {
 	Elements []FormElement `json:"elements"`
 	Err      string        `json:"err,omitempty"`
 }
